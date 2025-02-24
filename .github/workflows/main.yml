@@ -1,0 +1,24 @@
+name: Deploy to Ubuntu VPS
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # Runs on GitHub's Ubuntu runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Checkout your repo
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use your SSH private key from GitHub Secrets
+        ssh-passphrase: ${{ secrets.SSH_PRIVATE_KEY_PASSPHRASE }}  # Use the passphrase secret
+
+    - name: Start SSH session
+      run: |
+        ssh -o StrictHostKeyChecking=no user@your-vps-ip "while true; do sleep 1000; done"
