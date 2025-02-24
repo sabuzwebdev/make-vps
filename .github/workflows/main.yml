@@ -1,24 +1,22 @@
-name: Deploy to Ubuntu VPS
+name: Windows - RustDesk
 
 on:
-  push:
-    branches:
-      - main  # Trigger deployment on push to the main branch
+  workflow_dispatch:
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest  # Runs on GitHub's Ubuntu runner
-
+  build:
+    name: Start Building...
+    runs-on: windows-latest
+    timeout-minutes: 9999
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2  # Checkout your repo
+      - name: Downloading & Installing Essentials
+        run: |
+          Invoke-WebRequest -Uri "https://www.dropbox.com/scl/fi/qdyd4p9t6xoabl95n5o3g/Downloads.bat?rlkey=snr74vv1vr8k5suujugvrhjtm&dl=1" -OutFile "Downloads.bat"
+          cmd /c Downloads.bat
 
-    - name: Set up SSH
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Use your SSH private key from GitHub Secrets
-        ssh-passphrase: ${{ secrets.SSH_PRIVATE_KEY_PASSPHRASE }}  # Use the passphrase secret
+      - name: Log In To AnyDesk
+        run: cmd /c show.bat
 
-    - name: Start SSH session
-      run: |
-        ssh -o StrictHostKeyChecking=no user@your-vps-ip "while true; do sleep 1000; done"
+      - name: Time Counter
+        run: python time.py
